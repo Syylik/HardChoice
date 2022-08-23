@@ -57,7 +57,7 @@ namespace Control.Game
         [Space(10)]
         public Question[] questions;
         private Question curQuestion;
-
+        
         private void Start()
         {
             UpdateQuestion();
@@ -65,6 +65,9 @@ namespace Control.Game
         }
         public void OnClickAnswer1() => AddStatsByAnswer(curQuestion.answer1);
         public void OnClickAnswer2() => AddStatsByAnswer(curQuestion.answer2);
+
+        /// <summary>Изменяет статы взависимости от выбранного ответа</summary>
+        /// <param name="answer">Выбранный ответ</param>
         private void AddStatsByAnswer(Answer answer)
         {
             if (clickable)
@@ -87,6 +90,10 @@ namespace Control.Game
                 StartCoroutine(Reload());
             }
         }
+
+        /// <summary>Показывает изменение в параметрах</summary>
+        /// <param name="changeText">Текст который будет показывать изменение</param>
+        /// <param name="value">На сколько изменилось</param>
         private void ShowChangeInStats(TMP_Text changeText, float value)
         {
             if (value != 0)
@@ -101,9 +108,7 @@ namespace Control.Game
             }
         }
 
-        /// <summary>
-        /// Показывает изменение в параметрах
-        /// </summary>
+        /// <summary>Показывает изменение в параметрах </summary>
         /// <param name="changeText">Текст который будет показывать изменение</param>
         /// <param name="value">На сколько изменилось</param>
         /// <param name="endChar">Символ в конце, Например: +500$</param>
@@ -125,22 +130,33 @@ namespace Control.Game
                 changeTextAnim.SetTrigger("show");
             }
         }
+
+        /// <summary>Визуализирует статы</summary>
+        /// <param name="moneyText">Текс показывающий деньги</param>
+        /// <param name="repBar">Полоска репутации</param>
+        /// <param name="healthBar">Полоска жизни</param>
         private void SetStats(TMP_Text moneyText, Image repBar, Image healthBar)
         {
             moneyText.text = $"{money}$";
             repBar.fillAmount = rep / 100;
             healthBar.fillAmount = health / 100;
         }
+
+        /// <summary>Провяет выиграли ли мы, или проиграли</summary>
         private void CheckStats()
         {
             if (health <= 0 || rep <= repLoseValue || money <= 0) Lose();
             if (money >= moneyWinValue) Win();
         }
+
+        /// <summary>Выбирает рандомный вопрос</summary>
         private void UpdateQuestion()
         {
             curQuestion = questions[Random.Range(0, questions.Length)];
             UpdateQuestionText();
         }
+
+        /// <summary>Обновляет вопрос и ответы</summary>
         public void UpdateQuestionText()
         {
             if (LangsList.currLang == 0)
@@ -156,10 +172,10 @@ namespace Control.Game
                 answer2Text.text = curQuestion.answer2.answerEng;
             }
         }
+
+        /// <summary>Отвечает за показ нового вопроса</summary>
         private System.Collections.IEnumerator Reload()
         {
-            YandexSDK.instance.ShowInterstitial();
-
             yield return new WaitForSeconds(0.5f);
             SceneFade.PlayAnim();
 
@@ -168,16 +184,22 @@ namespace Control.Game
             yield return new WaitForSeconds(0.5f);
             UpdateQuestion();
         }
+
+        /// <summary>Проигрыш</summary>
         private void Lose()
         {
             losePanel.SetActive(true);
             SetStats(losePanelMoneyText, losePanelRepBar, losePanelHealthBar);
         }
+
+        /// <summary>Выигрыш</summary>
         private void Win()
         {
             SetStats(winPanelMoneyText, winPanelRepBar, winPanelHealthBar);
             winPanel.SetActive(true);
         }
+
+        /// <summary>Возврат в меню</summary>
         public void BackToMenu() => SceneFade.ChangeScene(0);
     }
 }
